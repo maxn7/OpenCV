@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1298233880 source:/home/max/Templates/C-C++/opencv/opencv/main.cpp
+	<opencv/cv.h>
+	<opencv/highgui.h>
+
+1298233880 source:/home/max/c/opencv/opencv/main.cpp
+	<opencv/cv.h>
+	<opencv/highgui.h>
+
