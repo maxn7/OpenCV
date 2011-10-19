@@ -74,7 +74,6 @@ using namespace std;
 	   cvShowImage( fenetre, image);
 	   cvShowImage( sortie, outImage);
 	   
- 
 	   // On attend 10ms
 	   key = cvWaitKey(10);
  
