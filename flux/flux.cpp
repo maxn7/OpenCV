@@ -1,86 +1,98 @@
 /*
- * Code written by Lya (GeckoGeek.fr)
+ * Supprime l'arrière plan et se focalise sur les objets mobiles
+ * l'image de référence est prise en appuyant sur 'espace'
  */
  
  
-#define fenetre "7Robot"
-#define sortie "Apres traitement"
+#define entree "Image de référence"
+#define sortie "Sortie"
  
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
- 
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+
 
 using namespace std;
 
+IplImage* refImageCapture(IplImage* sourceImage)
+{
+	/*Fonction permettant de capturer l'image de référence
+	 * sans copier certains attributs de l'image provenant du flux video. */
+	 
+	IplImage* refImage ;
+	CvScalar scalaire ; 
 
+	refImage = cvCreateImage(cvGetSize(sourceImage),IPL_DEPTH_8U,3);
+	
+		for(int x=0; x<sourceImage->width; x++)
+		{
+			for(int y=0; y<sourceImage->height; y++)
+			{
+				scalaire=cvGet2D(sourceImage, y, x); //On lit le pixel x,y de l'image recupérée
+				cvSet2D(refImage,y,x,scalaire); // et on le met sur l'image de référence
+			}
+		}
+		
+	return refImage;
+}
 
  int main() {
 	 
-	int i=0,x,y;
-	// Touche clavier
+	int i=0;
 	char key;
-	// Image
-	 IplImage *image;
-	// Image de sortie 
+	
+	// Images
+	 IplImage *refImage;
 	 IplImage *outImage;
+	 
 	// Capture vidéo
 	CvCapture *capture;
-	//Pixel
-	CvPoint pixel;
- 
-	// Ouvrir le flux vidéo
-	//capture = cvCreateFileCapture("/path/to/your/video/test.avi"); // chemin pour un fichier
-	capture = cvCreateCameraCapture(CV_CAP_ANY);
+	capture = cvCreateCameraCapture(0);
  
 	// Vérifier si l'ouverture du flux est ok
 	if (!capture) {
-	   printf("Ouverture du flux vidéo impossible !\n");
+	   cout << "Ouverture du flux vidéo impossible !\n" << endl;
 	   return 1;
 	}
  
-	// Définition de la fenêtre
-	cvNamedWindow(fenetre, CV_WINDOW_AUTOSIZE);
+	// Définition des fenêtres
+	cvNamedWindow(entree, CV_WINDOW_AUTOSIZE);
 	cvNamedWindow(sortie, CV_WINDOW_AUTOSIZE);
- 
+		
+	//On attend que le flux video soit propre
+	while(i<10) 
+	{
+		outImage = cvQueryFrame(capture);
+		cvWaitKey(10); 
+		i++;
+	}
+	cout << "Image de référence crée\n" << endl;
+
+	//Création de l'image de référence
+	refImage = refImageCapture(outImage);
+
 	// Boucle tant que l'utilisateur n'appuie pas sur la touche q (ou Q)
 	while(key != 'q' && key != 'Q') {
- 
-	   // On récupère une image
-	   image = cvQueryFrame(capture);
 		
-	   // Taille image de sortie
-	   outImage = cvCreateImage(cvGetSize(image),IPL_DEPTH_8U,3);
-	   x = image->width;
-	   y = image->height;
-	   
-	   //Smoothing
-	   cvSmooth(image,outImage,CV_GAUSSIAN,13,13);
-	   
-	   //Points aléatoires
+	   // Aquisition image de sortie
+		outImage = cvQueryFrame(capture);
+		if(key == ' ') refImage = refImageCapture(outImage);
+
+		//Traitement
+		cvAbsDiff(refImage, outImage, outImage);
+		cvThreshold(outImage, outImage, 100, 255, CV_THRESH_BINARY);
 		
-		for(i=0;i<100;i++)
-		{
-		   pixel.x = (int) floor(rand()%x);
-		   pixel.y = (int) floor(rand()%y);
-		   cvDrawCircle(outImage, pixel, 1, CV_RGB(255, 0, 0), -1);
-		}
-	   
-	   
-	   // On affiche l'image dans une fenêtre
-	   cvShowImage( fenetre, image);
+	   // On affiche les images
 	   cvShowImage( sortie, outImage);
+	   cvShowImage( entree, refImage);
 	   
-	   // On attend 10ms
-	   key = cvWaitKey(10);
- 
+	   // On attend 50ms
+	   key = cvWaitKey(50);
 	}
  
 	cvReleaseCapture(&capture);
-	cvDestroyWindow(fenetre);
+	cvDestroyWindow(entree);
+	cvDestroyWindow(sortie);
  
 	return 0;
  
