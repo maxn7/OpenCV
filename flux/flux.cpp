@@ -32,7 +32,6 @@ IplImage* refImageCapture(IplImage* sourceImage)
 				cvSet2D(refImage,y,x,scalaire); // et on le met sur l'image de référence
 			}
 		}
-		
 	return refImage;
 }
 
@@ -76,11 +75,13 @@ IplImage* refImageCapture(IplImage* sourceImage)
 		
 	   // Aquisition image de sortie
 		outImage = cvQueryFrame(capture);
+		cvSmooth(outImage,outImage,CV_GAUSSIAN,5,5); //Diminue le bruit
+		
 		if(key == ' ') refImage = refImageCapture(outImage);
 
 		//Traitement
 		cvAbsDiff(refImage, outImage, outImage);
-		cvThreshold(outImage, outImage, 100, 255, CV_THRESH_BINARY);
+		cvThreshold(outImage, outImage, 50, 255, CV_THRESH_BINARY);
 		
 	   // On affiche les images
 	   cvShowImage( sortie, outImage);
