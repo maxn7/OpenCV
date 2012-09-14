@@ -11,7 +11,6 @@ else
 	done
 	for i in *.cpp; do
 	    echo "compiling $i"
-	    echo "g++ -ggdb `pkg-config --cflags opencv` -o `basename $i .cpp` $i `pkg-config --libs opencv`;"
 	    g++ -ggdb `pkg-config --cflags opencv` -o `basename $i .cpp` $i `pkg-config --libs opencv`;
 	done
 fi

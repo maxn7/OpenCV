@@ -1,18 +1,17 @@
 /*
- * starter_video.cpp
+ * takePicure.cpp
  *
  *  Created on: Nov 23, 2010
  *      Author: Ethan Rublee
- *
- * A starter sample for using opencv, get a video stream and display the images
- * easy as CV_PI right?
+ * 
  *  
  *   Modified on: Sept 14, 2012
  *      By: Maxime Morin
  * 
- * Automatically take a picture from the device and return the path.	
+ * The program takes a picture from the specified device and return its name.	
  * 
  */
+ 
 #include "opencv2/highgui/highgui.hpp"
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -29,13 +28,11 @@ namespace
 {
 void help(char** av)
 {
-  cout << "\nThis program justs gets you started reading images from video\n"
-    "Usage:\n./" << av[0] << " <video device number>\n" << "q,Q,esc -- quit\n"
+  cout << "\nThis program record a picture in the current directory and return its name.\n"
+    "Usage:\n./" << av[0] << " <video device number>\n" 
       << "space   -- save frame\n\n"
-      << "\tThis is a starter sample, to get you up and going in a copy pasta fashion\n"
-      << "\tThe program captures frames from a camera connected to your computer.\n"
-      << "\tTo find the video device number, try ls /dev/video* \n"
-      << "\tYou may also pass a video file, like my_vide.avi instead of a device number"
+      << "\tThis is a test program to use OpenCV results in Matlab\n"
+
       << endl;
 }
 
@@ -88,6 +85,7 @@ int main(int ac, char** av)
     return 1;
   }
   std::string arg = av[1];
+
   VideoCapture capture(arg); //try to open string, this will attempt to open it as a video file
   if (!capture.isOpened()) //if this fails, try to open as a video camera, through the use of an integer param
     capture.open(atoi(arg.c_str()));
@@ -97,5 +95,6 @@ int main(int ac, char** av)
     help(av);
     return 1;
   }
+  
   return process(capture);
 }
